@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>{{ product.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        h1 { color: #333; }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        a.back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        img {
+            display: block;
+            margin: 20px 0;
+            max-width: 100%;
+            height: auto;
+        }
+        p.description {
+            font-style: italic;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>{{ product.name }}</h1>
+    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" width="300">
+    <p>Fiyat: {{ product.price }} ₺</p>
+    <p class="description">{{ product.description }}</p>
+
+    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+        <button type="submit">Sepete Ekle</button>
+    </form>
+
+    <a href="{{ url_for('index') }}" class="back-link">Ana Sayfaya Dön</a>
+
+</body>
+</html>

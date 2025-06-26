@@ -1,0 +1,17 @@
+[
+  {
+    "id": "1",
+    "name": "Telefon",
+    "price": 3500,
+    "description": "Yeni nesil akıllı telefon.",
+    "image": "phone.jpg"
+  },
+  {
+    "id": "2",
+    "name": "Laptop",
+    "price": 7500,
+    "description": "Yüksek performanslı laptop.",
+    "image": "laptop.jpg"
+  }
+]
+

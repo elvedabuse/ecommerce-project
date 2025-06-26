@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ürün Listesi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 220px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #ddd;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .sidebar h3 {
+            margin-top: 0;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .sidebar li.active a {
+            font-weight: bold;
+            color: #dc3545; /* kırmızı */
+        }
+
+        .main-content {
+            margin-left: 220px;
+            padding: 20px;
+            overflow-y: auto;
+            width: calc(100% - 220px);
+            box-sizing: border-box;
+        }
+
+        .cart-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .cart-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ürün listeleme grid yapısı */
+        ul.products {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        ul.products li {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 6px rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: box-shadow 0.3s ease;
+        }
+        ul.products li:hover {
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
+        }
+        ul.products li h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        ul.products li img {
+            max-width: 100%;
+            height: 130px;
+            object-fit: contain;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
+        }
+        ul.products li p {
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+        ul.products li form {
+            width: 100%;
+            text-align: center;
+        }
+        ul.products li button {
+            width: 100%;
+            padding: 10px 0;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        ul.products li button:hover {
+            background-color: #218838;
+        }
+
+        /* Responsive ayarlar */
+        @media (max-width: 1100px) {
+            ul.products {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 750px) {
+            ul.products {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 450px) {
+            ul.products {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        /* Kullanıcı bilgisi */
+        .user-info {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .user-info a {
+            color: #007bff;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h3>Kategoriler</h3>
+        <ul>
+            <li class="{% if current_department == 0 %}active{% endif %}"><a href="{{ url_for('index') }}">Tüm Ürünler</a></li>
+            <li class="{% if current_department == 1 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=1) }}">Dondurulmuş Gıdalar</a></li>
+            <li class="{% if current_department == 2 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=2) }}">Atıştırmalıklar</a></li>
+            <li class="{% if current_department == 3 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=3) }}">Ekmek & Fırın Ürünleri</a></li>
+            <li class="{% if current_department == 4 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=4) }}">Meyve & Sebze</a></li>
+            <li class="{% if current_department == 5 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=5) }}">İçecekler</a></li>
+            <li class="{% if current_department == 6 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=6) }}">Temizlik</a></li>
+            <li class="{% if current_department == 7 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=7) }}">Çay & Kahve</a></li>
+            <li class="{% if current_department == 8 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=8) }}">Evcil Hayvan Ürünleri</a></li>
+            <li class="{% if current_department == 9 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=9) }}">Makarna & Pirinç</a></li>
+            <li class="{% if current_department == 10 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=10) }}">Kahvaltılık</a></li>
+            <li class="{% if current_department == 11 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=11) }}">Kişisel Bakım</a></li>
+            <li class="{% if current_department == 12 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=12) }}">Et & Tavuk</a></li>
+            <li class="{% if current_department == 13 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=13) }}">Baharat & Soslar</a></li>
+            <li class="{% if current_department == 14 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=14) }}">Tahıl & Granola</a></li>
+            <li class="{% if current_department == 15 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=15) }}">Konserve & Hazır Yemek</a></li>
+            <li class="{% if current_department == 16 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=16) }}">Süt & Yoğurt</a></li>
+            <li class="{% if current_department == 17 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=17) }}">Ev & Yaşam</a></li>
+            <li class="{% if current_department == 18 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=18) }}">Bebek Ürünleri</a></li>
+            <li class="{% if current_department == 19 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=19) }}">Tatlı & Atıştırmalık</a></li>
+            <li class="{% if current_department == 20 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=20) }}">Şarküteri</a></li>
+            <li class="{% if current_department == 21 %}active{% endif %}"><a href="{{ url_for('filter_by_department', department_id=21) }}">Organik & Sağlıklı</a></li>
+            <li>
+                <a href="{{ url_for('orders_view') }}">🧾 Sipariş Geçmişim</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+
+        {% if session.get('username') %}
+            <div class="user-info">
+                Hoşgeldin, <strong>{{ session.get('username') }}</strong>!
+                <a href="{{ url_for('logout') }}">Çıkış Yap</a>
+            </div>
+        {% else %}
+            <div class="user-info">
+                <a href="{{ url_for('login') }}">Giriş Yap</a> veya <a href="{{ url_for('register') }}">Kayıt Ol</a>
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('cart_view') }}" class="cart-button">
+            🛒 Sepeti Görüntüle{% if total_quantity > 0 %} ({{ total_quantity }}){% endif %}
+        </a>
+
+        <h1>Ürünler</h1>
+
+        <ul class="products">
+            {% for product in products %}
+            <li>
+                <h3><a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>{% if product.price %} – {{ product.price }} ₺{% endif %}</h3>
+                {% if product.image %}
+                <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+                {% endif %}
+                {% if product.description %}
+                <p>{{ product.description }}</p>
+                {% endif %}
+                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post">
+                    <button type="submit">Sepete Ekle</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+</body>
+</html>

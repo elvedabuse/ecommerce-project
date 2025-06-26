@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sepetim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .checkout-button {
+            background-color: #28a745;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #007bff;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+        .recommendation {
+            margin-top: 40px;
+        }
+        .recommendation ul {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .recommendation li {
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 180px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: white;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .recommendation li:hover {
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .recommendation a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+            height: 100%;
+            background-color: transparent !important;
+            outline: none;
+        }
+        .recommendation a:hover {
+            text-decoration: underline;
+            background-color: #f9f9f9 !important;
+            outline: none;
+        }
+        .recommendation img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .recommendation p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .recommendation p.price {
+            font-weight: bold;
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Sepetinizdeki Ürünler</h1>
+
+{% if cart %}
+    <ul>
+        {% for item in cart %}
+            <li>
+                <strong>{{ item.product.name }}</strong> – {{ item.product.price }} ₺ x {{ item.quantity }} = <strong>{{ item.item_total }} ₺</strong>
+                <form action="{{ url_for('remove_from_cart', product_id=item.product.id) }}" method="post" style="display:inline;">
+                    <button type="submit">Çıkar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <h3>Toplam: {{ total_price }} ₺</h3>
+    
+    {% if session.username %}
+        <form action="{{ url_for('checkout') }}" method="post">
+            <button class="checkout-button" type="submit">Siparişi Tamamla</button>
+        </form>
+    {% else %}
+        <p><a href="{{ url_for('login') }}">Siparişi tamamlamak için lütfen giriş yapın.</a></p>
+    {% endif %}
+
+    <div class="recommendation">
+        <h2>Bu ürünlere göz atabilirsiniz</h2>
+        {% if recommendations %}
+        <ul>
+            {% for rec in recommendations %}
+            <li>
+                <a href="{{ url_for('product_detail', product_id=rec.product_id) }}">
+                    <strong>{{ rec.product_name }}</strong>
+                    {% if rec.image %}
+                        <img src="{{ url_for('static', filename=rec.image) }}" alt="{{ rec.product_name }}">
+                    {% endif %}
+                    <p>{{ rec.description or 'Ürün açıklaması yok.' }}</p>
+                    <p class="price">{{ "%.2f"|format(rec.price) }} ₺</p>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Öneri bulunamadı.</p>
+        {% endif %}
+    </div>
+
+{% else %}
+    <p>Sepetiniz boş.</p>
+{% endif %}
+
+<a href="{{ url_for('index') }}">Ana Sayfaya Dön</a>
+
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sipariş Geçmişim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        li {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
+        }
+        .order-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #28a745;
+        }
+        .item-list {
+            margin-left: 20px;
+        }
+        .item {
+            margin-bottom: 8px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        a.back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        a.back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Sipariş Geçmişim</h1>
+
+{% if orders %}
+    <ul>
+    {% for order in orders %}
+        <li>
+            <div class="order-header">
+                Tarih: {{ datetime.fromisoformat(order.timestamp).strftime('%d %B %Y %H:%M') }} | Toplam Tutar: {{ "%.2f"|format(order.total_price) }} ₺
+            </div>
+            <div>Kullanıcı: {{ order.username }}</div>
+            <div class="item-list">
+                <strong>Sipariş Detayları:</strong>
+                <ul>
+                {% for item in order['items'] %}
+                    <li class="item">
+                        <img src="{{ url_for('static', filename=item.image if item.image else 'default.jpg') }}" alt="{{ item.name }}">
+                        {{ item.name }} – {{ item.quantity }} adet – {{ "%.2f"|format(item.item_total) }} ₺
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Henüz siparişiniz bulunmamaktadır.</p>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back-link">Ana Sayfaya Dön</a>
+
+</body>
+</html>

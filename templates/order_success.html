@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sipariş Onayı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: #333;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 5px;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        }
+        a.back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        a.back-link:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Siparişiniz Alındı!</h1>
+
+    <p><strong>Kullanıcı:</strong> {{ order.username }}</p>
+    <p><strong>Tarih:</strong> {{ order.timestamp }}</p>
+    <p><strong>Toplam Tutar:</strong> {{ "%.2f"|format(order.total_price) }} ₺</p>
+
+    <h2>Sipariş Detayları:</h2>
+    <ul>
+        {% for item in order["items"] %}
+        <li>{{ item.name }} – {{ item.quantity }} adet – {{ "%.2f"|format(item.item_total) }} ₺</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('index') }}" class="back-link">Ana Sayfaya Dön</a>
+
+</body>
+</html>
