@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="orders.xsl"?>
+<!-- Sipariş verileri: elvedabuse kullanıcısı -->
 <Orders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="orders.xsd">
+        xsi:noNamespaceSchemaLocation="orders.xsd"
+        xmlns:ex="http://elveda.com/orders">
+  
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T19:54:34.246181</timestamp>
@@ -8,13 +12,14 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>2</quantity>
         <price>10.0</price>
         <item_total>20.0</item_total>
       </item>
     </items>
   </item>
+
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T21:04:53.240290</timestamp>
@@ -22,13 +27,14 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>3</quantity>
         <price>10.0</price>
         <item_total>30.0</item_total>
       </item>
     </items>
   </item>
+
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T21:08:30.552309</timestamp>
@@ -36,13 +42,15 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>3</quantity>
         <price>10.0</price>
         <item_total>30.0</item_total>
       </item>
     </items>
   </item>
+
+  <!-- Örnek yorum: Aynı üründen farklı zamanlarda alınmış -->
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T21:09:28.658282</timestamp>
@@ -50,13 +58,14 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>3</quantity>
         <price>10.0</price>
         <item_total>30.0</item_total>
       </item>
     </items>
   </item>
+
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T21:19:35.348009</timestamp>
@@ -64,13 +73,14 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>2</quantity>
         <price>10.0</price>
         <item_total>20.0</item_total>
       </item>
     </items>
   </item>
+
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T21:47:10.955415</timestamp>
@@ -78,20 +88,21 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>1</quantity>
         <price>10.0</price>
         <item_total>10.0</item_total>
       </item>
       <item>
         <product_id>2</product_id>
-        <name>All-Seasons Salt</name>
+        <name><![CDATA[All-Seasons Salt]]></name>
         <quantity>1</quantity>
         <price>10.0</price>
         <item_total>10.0</item_total>
       </item>
     </items>
   </item>
+
   <item>
     <username>elvedabuse</username>
     <timestamp>2025-06-21T21:49:19.798932</timestamp>
@@ -99,11 +110,12 @@
     <items>
       <item>
         <product_id>1</product_id>
-        <name>Chocolate Sandwich Cookies</name>
+        <name><![CDATA[Chocolate Sandwich Cookies]]></name>
         <quantity>2</quantity>
         <price>10.0</price>
         <item_total>20.0</item_total>
       </item>
     </items>
   </item>
+
 </Orders>
