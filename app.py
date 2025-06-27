@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from recommender.item_based_recommender import ItemBasedRecommender
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import jsonify
 import csv
 import json
 import random
 from datetime import datetime
+import xmltodict
+import dicttoxml
+from flask import Response
+
 
 app = Flask(__name__)
 app.secret_key = 'cok-gizli-bir-anahtar'
@@ -60,13 +65,13 @@ def load_products_from_csv(path):
             products.append(product)
     return products
 
-products = load_products_from_csv('recommender/products.csv')
+products = load_products_from_csv('recommender/products_demo.csv')
 
 # ==========================
 # Öneri Sistemi Kurulumu
 # ==========================
 recommender = ItemBasedRecommender(
-    'recommender/products.csv',
+    'recommender/products_demo.csv',
     'recommender/processed_data.pkl'
 )
 recommender.load_and_prepare_data()
@@ -236,7 +241,8 @@ def checkout():
                 "name": product['name'],
                 "quantity": quantity,
                 "price": product['price'],
-                "item_total": item_total
+                "item_total": item_total,
+                "image": product.get('image', 'default.jpg')
             })
 
     order_record = {
@@ -253,14 +259,76 @@ def checkout():
     session['cart'] = {}
     return render_template('order_success.html', order=order_record)
 
-@app.route('/orders')
+@app.route('/orders', methods=['GET', 'POST'])
+def orders_api():
+    username = session.get('username')
+    if not username:
+        return redirect(url_for('login'))
+
+    if request.method == 'GET':
+        orders = load_orders()
+        user_orders = [order for order in orders if order['username'] == username]
+
+        accept = request.headers.get('Accept', '')
+        if 'application/xml' in accept:
+            xml_data = dicttoxml.dicttoxml(user_orders, custom_root='Orders', attr_type=False)
+            return Response(xml_data, mimetype='application/xml')
+        else:
+            return jsonify(user_orders)
+
+    elif request.method == 'POST':
+        content_type = request.headers.get('Content-Type', '')
+
+        if 'application/xml' in content_type:
+            try:
+                data = xmltodict.parse(request.data)
+                # XML içindeki 'Orders' ve 'item' yapısına göre siparişi alıyoruz
+                order = data.get('Orders', {}).get('item')
+                if order:
+                    # Tek sipariş veya liste olabilir, liste değilse liste yap
+                    if not isinstance(order, list):
+                        order = [order]
+
+                    orders = load_orders()
+                    for o in order:
+                        # XML'den gelen değerleri uygun formata çevir (string->int/float)
+                        o['total_price'] = float(o['total_price'])
+                        for i in o['items']['item']:
+                            i['product_id'] = int(i['product_id'])
+                            i['quantity'] = int(i['quantity'])
+                            i['price'] = float(i['price'])
+                            i['item_total'] = float(i['item_total'])
+                        orders.append(o)
+                    save_orders(orders)
+                    return Response("<response>Order added</response>", mimetype='application/xml', status=201)
+                else:
+                    return Response("<response>Invalid XML format</response>", mimetype='application/xml', status=400)
+            except Exception as e:
+                return Response(f"<response>Error: {str(e)}</response>", mimetype='application/xml', status=400)
+
+        elif 'application/json' in content_type:
+            # JSON post işlemi (zaten var olabilir, yoksa buraya ekleyebilirsin)
+            data = request.json
+            if data:
+                orders = load_orders()
+                orders.append(data)
+                save_orders(orders)
+                return jsonify({"message": "Order added"}), 201
+            else:
+                return jsonify({"error": "Invalid JSON"}), 400
+
+        else:
+            return jsonify({"error": "Unsupported Content-Type"}), 415
+        
+@app.route('/orders_view')
 def orders_view():
     username = session.get('username')
     if not username:
         return redirect(url_for('login'))
-    all_orders = load_orders()
-    user_orders = [order for order in all_orders if order['username'] == username]
-    user_orders.sort(key=lambda x: x['timestamp'], reverse=True)  # Tarihe göre ters sırala
+
+    orders = load_orders()
+    user_orders = [order for order in orders if order['username'] == username]
+
     return render_template('orders.html', orders=user_orders)
 
 # ==========================

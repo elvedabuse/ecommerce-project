@@ -1,0 +1,12 @@
+<!ELEMENT Orders (item+)>
+<!ELEMENT item (username, timestamp, total_price, items)>
+<!ELEMENT username (#PCDATA)>
+<!ELEMENT timestamp (#PCDATA)>
+<!ELEMENT total_price (#PCDATA)>
+<!ELEMENT items (item+)>
+<!ELEMENT item (product_id, name, quantity, price, item_total)>
+<!ELEMENT product_id (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT quantity (#PCDATA)>
+<!ELEMENT price (#PCDATA)>
+<!ELEMENT item_total (#PCDATA)>

@@ -84,8 +84,8 @@
                 <ul>
                 {% for item in order['items'] %}
                     <li class="item">
-                        <img src="{{ url_for('static', filename=item.image if item.image else 'default.jpg') }}" alt="{{ item.name }}">
-                        {{ item.name }} – {{ item.quantity }} adet – {{ "%.2f"|format(item.item_total) }} ₺
+                        <img src="{{ url_for('static', filename=item['image'] if item['image'] else 'default.jpg') }}" alt="{{ item['name'] }}">
+                        {{ item['name'] }} – {{ item['quantity'] }} adet – {{ "%.2f"|format(item['item_total']) }} ₺
                     </li>
                 {% endfor %}
                 </ul>

@@ -103,5 +103,34 @@
                 "item_total": 20.0
             }
         ]
+    },
+    {
+        "username": "elvedabuse",
+        "timestamp": "2025-06-26T21:10:36.385897",
+        "total_price": 10.0,
+        "items": [
+            {
+                "product_id": 1,
+                "name": "Chocolate Sandwich Cookies",
+                "quantity": 1,
+                "price": 10.0,
+                "item_total": 10.0
+            }
+        ]
+    },
+    {
+        "username": "elvedabuse",
+        "timestamp": "2025-06-26T21:37:48.829292",
+        "total_price": 10.0,
+        "items": [
+            {
+                "product_id": 1,
+                "name": "Chocolate Sandwich Cookies",
+                "quantity": 1,
+                "price": 10.0,
+                "item_total": 10.0,
+                "image": "default.jpg"
+            }
+        ]
     }
 ]
