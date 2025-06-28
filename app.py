@@ -1,18 +1,35 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from recommender.item_based_recommender import ItemBasedRecommender
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import jsonify
+from flasgger import Swagger
+
+from flask import jsonify, Response
 import csv
 import json
 import random
 from datetime import datetime
 import xmltodict
 import dicttoxml
-from flask import Response
 
 
 app = Flask(__name__)
 app.secret_key = 'cok-gizli-bir-anahtar'
+swagger = Swagger(app)
+
+API_KEY = "123456"
+
+# API Key kontrolü - Tüm isteklerde çalışır
+@app.before_request
+def require_api_key():
+    # İzin verilen endpoint'ler (örnek: login, register, swagger dokümanları vb.)
+    allowed_endpoints = ['login', 'register', 'static', 'flasgger.apidocs', 'flasgger.static']
+    
+    # Eğer istek izin verilen endpoint'lerden birine değilse API key kontrolü yap
+    if not any(request.endpoint and request.endpoint.startswith(ep) for ep in allowed_endpoints):
+        token = request.headers.get('X-API-KEY')
+        if token != API_KEY:
+            return jsonify({"error": "Unauthorized - Invalid or missing API key"}), 401
+
 
 # datetime'i Jinja'ya global olarak ekle
 app.jinja_env.globals.update(datetime=datetime)
@@ -177,7 +194,6 @@ def cart_view():
     if products_in_cart:
         first_product_id = products_in_cart[0]['product']['id']
         raw_recs = recommender.get_similar_products(first_product_id, top_n=5)
-        # Burada tam ürün bilgilerini ekleyelim:
         for rec in raw_recs:
             prod = next((p for p in products if p['id'] == rec['product_id']), None)
             if prod:
@@ -212,6 +228,32 @@ def product_detail(product_id):
     if not product:
         return "Ürün bulunamadı.", 404
     return render_template('product_detail.html', product=product)
+
+# ==========================
+# API: Ürün Listesi JSON & XML
+# ==========================
+@app.route('/api/v1/products', methods=['GET'])
+def get_products_api():
+    """
+    Ürünleri getir
+    ---
+    tags:
+      - Products
+    produces:
+      - application/json
+      - application/xml
+    responses:
+      200:
+        description: Ürün listesi başarıyla getirildi
+        examples:
+          application/json: [{"id":1,"name":"Phone","price":1000}]
+    """
+    accept = request.headers.get('Accept', '')
+    if 'application/xml' in accept:
+        xml_data = dicttoxml.dicttoxml({'product': products}, custom_root='Products', attr_type=False)
+        return Response(xml_data, mimetype='application/xml')
+    else:
+        return jsonify(products)
 
 
 # ==========================
@@ -259,6 +301,9 @@ def checkout():
     session['cart'] = {}
     return render_template('order_success.html', order=order_record)
 
+# ==========================
+# Sipariş API (JSON & XML)
+# ==========================
 @app.route('/orders', methods=['GET', 'POST'])
 def orders_api():
     username = session.get('username')
@@ -282,16 +327,12 @@ def orders_api():
         if 'application/xml' in content_type:
             try:
                 data = xmltodict.parse(request.data)
-                # XML içindeki 'Orders' ve 'item' yapısına göre siparişi alıyoruz
                 order = data.get('Orders', {}).get('item')
                 if order:
-                    # Tek sipariş veya liste olabilir, liste değilse liste yap
                     if not isinstance(order, list):
                         order = [order]
-
                     orders = load_orders()
                     for o in order:
-                        # XML'den gelen değerleri uygun formata çevir (string->int/float)
                         o['total_price'] = float(o['total_price'])
                         for i in o['items']['item']:
                             i['product_id'] = int(i['product_id'])
@@ -307,7 +348,6 @@ def orders_api():
                 return Response(f"<response>Error: {str(e)}</response>", mimetype='application/xml', status=400)
 
         elif 'application/json' in content_type:
-            # JSON post işlemi (zaten var olabilir, yoksa buraya ekleyebilirsin)
             data = request.json
             if data:
                 orders = load_orders()
@@ -319,7 +359,7 @@ def orders_api():
 
         else:
             return jsonify({"error": "Unsupported Content-Type"}), 415
-        
+
 @app.route('/orders_view')
 def orders_view():
     username = session.get('username')
