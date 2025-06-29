@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-orders = pd.read_csv("orders.csv") 
+orders = pd.read_csv("C:/Users/Elveda Buse/ecommerce_project/recommender/orders_demo.csv") 
 
 # Kullanıcı başına toplam sipariş sayısı
 user_order_counts = orders.groupby('user_id')['order_id'].count().sort_values(ascending=False)

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from recommender.item_based_recommender import ItemBasedRecommender
 from werkzeug.security import generate_password_hash, check_password_hash
 from flasgger import Swagger
+from flasgger import swag_from
 
 from flask import jsonify, Response
 import csv
@@ -18,18 +19,18 @@ swagger = Swagger(app)
 
 API_KEY = "123456"
 
-# API Key kontrolü - Tüm isteklerde çalışır
+# API Key kontrolü - Sadece API endpoint'lerinde çalışır
 @app.before_request
 def require_api_key():
-    # İzin verilen endpoint'ler (örnek: login, register, swagger dokümanları vb.)
-    allowed_endpoints = ['login', 'register', 'static', 'flasgger.apidocs', 'flasgger.static']
-    
-    # Eğer istek izin verilen endpoint'lerden birine değilse API key kontrolü yap
-    if not any(request.endpoint and request.endpoint.startswith(ep) for ep in allowed_endpoints):
+    api_endpoints = [
+        'get_products_api',
+        'orders_api',
+        # Eğer başka API endpoint varsa buraya ekle
+    ]
+    if request.endpoint in api_endpoints:
         token = request.headers.get('X-API-KEY')
         if token != API_KEY:
             return jsonify({"error": "Unauthorized - Invalid or missing API key"}), 401
-
 
 # datetime'i Jinja'ya global olarak ekle
 app.jinja_env.globals.update(datetime=datetime)
@@ -233,29 +234,34 @@ def product_detail(product_id):
 # API: Ürün Listesi JSON & XML
 # ==========================
 @app.route('/api/v1/products', methods=['GET'])
+@swag_from({
+    'responses': {
+        200: {
+            'description': 'Ürünleri JSON veya XML formatında döner',
+            'examples': {
+                'application/json': [
+                    {
+                        "id": 1,
+                        "name": "Chocolate Sandwich Cookies",
+                        "department_id": 1,
+                        "aisle_id": 1,
+                        "price": 10.0,
+                        "description": "Ürün açıklaması yok.",
+                        "image": "default.jpg"
+                    }
+                ],
+                'application/xml': "<Products><product><id>1</id><name>Chocolate Sandwich Cookies</name>...</product></Products>"
+            }
+        }
+    }
+})
 def get_products_api():
-    """
-    Ürünleri getir
-    ---
-    tags:
-      - Products
-    produces:
-      - application/json
-      - application/xml
-    responses:
-      200:
-        description: Ürün listesi başarıyla getirildi
-        examples:
-          application/json: [{"id":1,"name":"Phone","price":1000}]
-    """
     accept = request.headers.get('Accept', '')
     if 'application/xml' in accept:
         xml_data = dicttoxml.dicttoxml({'product': products}, custom_root='Products', attr_type=False)
         return Response(xml_data, mimetype='application/xml')
     else:
         return jsonify(products)
-
-
 # ==========================
 # Siparişi Tamamlama
 # ==========================
@@ -304,22 +310,33 @@ def checkout():
 # ==========================
 # Sipariş API (JSON & XML)
 # ==========================
+from flask import request, jsonify, Response
+
+API_KEY = "123456"
+
 @app.route('/orders', methods=['GET', 'POST'])
 def orders_api():
-    username = session.get('username')
-    if not username:
-        return redirect(url_for('login'))
+    token = request.headers.get('X-API-KEY')
+    if token != API_KEY:
+        return jsonify({"error": "Unauthorized - Invalid or missing API key"}), 401
 
     if request.method == 'GET':
         orders = load_orders()
-        user_orders = [order for order in orders if order['username'] == username]
+
+        # İsteğe bağlı username sorgu parametresi al
+        req_username = request.args.get('username', None)
+
+        if req_username:
+            filtered_orders = [order for order in orders if order['username'] == req_username]
+        else:
+            filtered_orders = orders
 
         accept = request.headers.get('Accept', '')
         if 'application/xml' in accept:
-            xml_data = dicttoxml.dicttoxml(user_orders, custom_root='Orders', attr_type=False)
+            xml_data = dicttoxml.dicttoxml(filtered_orders, custom_root='Orders', attr_type=False)
             return Response(xml_data, mimetype='application/xml')
         else:
-            return jsonify(user_orders)
+            return jsonify(filtered_orders)
 
     elif request.method == 'POST':
         content_type = request.headers.get('Content-Type', '')

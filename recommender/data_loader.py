@@ -4,9 +4,9 @@ from scipy.sparse import coo_matrix, csr_matrix
 import pickle
 
 # Verileri oku
-orders = pd.read_csv('orders.csv')
-products = pd.read_csv('products.csv')
-order_products__prior = pd.read_csv('order_products__prior.csv')
+orders = pd.read_csv("C:/Users/Elveda Buse/ecommerce_project/recommender/orders_demo.csv")
+products = pd.read_csv("C:/Users/Elveda Buse/ecommerce_project/recommender/products_demo.csv")
+order_products__prior = pd.read_csv("C:/Users/Elveda Buse/ecommerce_project/recommender/order_products__prior_demo.csv")
 
 # Veri setlerini birleştir
 merged_df = pd.merge(order_products__prior, orders, on='order_id')

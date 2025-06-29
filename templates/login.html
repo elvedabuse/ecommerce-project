@@ -1,7 +1,96 @@
-<h2>Giriş Yap</h2>
-<form method="post">
-    Kullanıcı Adı: <input type="text" name="username"><br>
-    Şifre: <input type="password" name="password"><br>
-    <button type="submit">Giriş Yap</button>
-</form>
-<a href="{{ url_for('register') }}">Kayıt ol</a>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<title>Giriş Yap</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f7f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .login-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 320px;
+  }
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #555;
+  }
+  input[type="text"],
+  input[type="password"] {
+    padding: 10px 12px;
+    margin-bottom: 20px;
+    border: 1.8px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #4a90e2;
+    outline: none;
+  }
+  button {
+    background-color: #4a90e2;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #357ABD;
+  }
+  .register-link {
+    text-align: center;
+    margin-top: 15px;
+  }
+  .register-link a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .register-link a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Giriş Yap</h2>
+    <form method="post">
+      <label for="username">Kullanıcı Adı</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="password">Şifre</label>
+      <input type="password" id="password" name="password" required>
+
+      <button type="submit">Giriş Yap</button>
+    </form>
+    <div class="register-link">
+      <a href="{{ url_for('register') }}">Kayıt ol</a>
+    </div>
+  </div>
+</body>
+</html>
